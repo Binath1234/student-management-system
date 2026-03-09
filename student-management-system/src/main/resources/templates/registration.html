@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Registration - SMS</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body class="bg-light">
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="/">SMS Portal</a>
+            <div class="navbar-nav">
+                <a class="nav-link" href="/">මුල් පිටුව</a>
+                <a class="nav-link" href="/students">ශිෂ්‍ය ලැයිස්තුව</a>
+                <a class="nav-link active" href="/register">ලියාපදිංචිය</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6 border p-4 shadow bg-white rounded">
+                <h2 class="text-center mb-4">ශිෂ්‍ය ලියාපදිංචිය</h2>
+                
+                <form th:action="@{/students}" th:object="${student}" method="POST">
+                    <div class="mb-3">
+                        <label class="form-label">First Name</label>
+                        <input type="text" th:field="*{firstName}" class="form-control" placeholder="Enter First Name" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Last Name</label>
+                        <input type="text" th:field="*{lastName}" class="form-control" placeholder="Enter Last Name" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" th:field="*{email}" class="form-control" placeholder="Enter Email Address" required>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">ලියාපදිංචි කරන්න</button>
+                        <a th:href="@{/students}" class="btn btn-secondary">අවලංගු කරන්න</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

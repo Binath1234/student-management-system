@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Management Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
+    <style>
+        body {
+            background-color: #f8fafc; /* ලා අළු පසුබිම */
+            overflow-x: hidden;
+        }
+        /* Sidebar Design */
+        .sidebar {
+            background-color: #1e293b; /* තද නිල්/කළු පසුබිම */
+            min-height: 100vh;
+            color: white;
+        }
+        .sidebar .nav-link {
+            color: #cbd5e1;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            transition: 0.3s;
+        }
+        .sidebar .nav-link:hover, .sidebar .nav-link.active {
+            background-color: #2563eb;
+            color: white;
+        }
+        /* Table Design */
+        .table-container {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+        }
+        .status-badge {
+            background-color: #d1fae5;
+            color: #065f46;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 500;
+        }
+        .search-icon {
+            background: transparent;
+            border-right: none;
+        }
+        .search-input {
+            border-left: none;
+        }
+        .search-input:focus {
+            box-shadow: none;
+            border-color: #dee2e6;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="row flex-nowrap">
+        
+        <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 sidebar d-flex flex-column p-3">
+            <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+                <span class="fs-5 fw-bold ms-2 mt-3 mb-4">University SMS</span>
+            </a>
+            
+            <ul class="nav nav-pills flex-column mb-auto w-100">
+                <li class="nav-item">
+                    <a href="/students" class="nav-link active px-3 py-2">
+                        <i class="bi bi-grid px-2"></i> Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a th:href="@{/register}" class="nav-link px-3 py-2">
+                        <i class="bi bi-person-plus px-2"></i> Student Registration
+                    </a>
+                </li>
+                <li>
+    <a th:href="@{/courses}" class="nav-link px-3 py-2">
+        <i class="bi bi-book px-2"></i> Course Management
+    </a>
+</li>
+                <li><a href="#" class="nav-link px-3 py-2"><i class="bi bi-mortarboard px-2"></i> Programs</a></li>
+                <li><a href="#" class="nav-link px-3 py-2"><i class="bi bi-file-earmark-text px-2"></i> Reports</a></li>
+                <li><a href="#" class="nav-link px-3 py-2"><i class="bi bi-gear px-2"></i> Settings</a></li>
+            </ul>
+            
+            <hr>
+            <div class="pb-4">
+                <a th:href="@{/logout}" class="btn btn-outline-light w-100">
+                    <i class="bi bi-box-arrow-right"></i> Logout
+                </a>
+            </div>
+        </div>
+
+        <div class="col py-4 px-4 px-md-5">
+            <h2 class="fw-bold mb-1">Student Management Dashboard</h2>
+            <p class="text-muted">View and manage student records</p>
+
+           <div class="mb-4 mt-4">
+    <form th:action="@{/students}" method="get">
+        <label class="form-label text-muted">Search by Student Name</label>
+        <div class="input-group" style="max-width: 600px;">
+            <span class="input-group-text search-icon"><i class="bi bi-search text-muted"></i></span>
+            <input type="text" name="keyword" class="form-control search-input" placeholder="Enter student name here...">
+            <button type="submit" class="btn btn-primary px-4">Search</button>
+        </div>
+    </form>
+</div>
+
+            <div class="table-container">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="text-muted" style="border-bottom: 2px solid #f8fafc;">
+                        <tr>
+                            <th class="border-0 pb-3">Avatar</th>
+                            <th class="border-0 pb-3">Full Name</th>
+                            <th class="border-0 pb-3">Email Address</th>
+                            <th class="border-0 pb-3">Status</th>
+                            <th class="border-0 pb-3 text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="student : ${students}">
+                            
+                            <td>
+                                <img th:src="@{'https://ui-avatars.com/api/?name=' + ${student.firstName} + '+' + ${student.lastName} + '&background=random&color=fff'}" class="avatar" alt="avatar">
+                            </td>
+                            
+                            <td>
+                                <span class="fw-semibold" th:text="${student.firstName + ' ' + student.lastName}"></span>
+                            </td>
+                            
+                            <td th:text="${student.email}"></td>
+                            
+                            <td><span class="status-badge">Active</span></td>
+                            
+                            <td class="text-center">
+                                <a th:href="@{/students/edit/{id}(id=${student.id})}" class="btn btn-sm text-primary fs-5 py-0 px-1">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                                <a th:href="@{/students/delete/{id}(id=${student.id})}" 
+                                   class="btn btn-sm text-danger fs-5 py-0 px-1"
+                                   onclick="return confirm('ඔබට විශ්වාසද මෙම ශිෂ්‍යයාව ඉවත් කිරීමට අවශ්‍ය බව?')">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
