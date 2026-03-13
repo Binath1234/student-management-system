@@ -2,119 +2,349 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Course Management</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Management - SMS</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
     <style>
-        body { background-color: #f8fafc; }
-        .sidebar { background-color: #1e293b; min-height: 100vh; color: white; }
-        .nav-link { color: #cbd5e1; border-radius: 8px; margin-bottom: 5px; }
-        .nav-link.active { background-color: #2563eb; color: white; }
-        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #f8fafc;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px 0;
+            position: fixed;
+            width: 250px;
+            left: 0;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar .logo {
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 20px;
+        }
+
+        .sidebar .logo h4 {
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            margin: 0;
+        }
+
+        .sidebar .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            padding: 12px 20px;
+            margin: 5px 10px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+            border-left: 4px solid transparent;
+        }
+
+        .sidebar .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .sidebar .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.25);
+            color: white;
+            border-left-color: white;
+        }
+
+        .sidebar .nav-link i {
+            margin-right: 12px;
+            font-size: 18px;
+        }
+
+        .sidebar-logout {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            padding: 0 10px;
+        }
+
+        .sidebar-logout .nav-link {
+            width: calc(100% - 20px);
+            justify-content: center;
+            margin: 0 10px;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 250px;
+            padding: 30px;
+            width: calc(100% - 250px);
+            min-height: 100vh;
+        }
+
+        .page-header {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .page-header-content h2 {
+            color: #1e293b;
+            font-weight: 700;
+            margin: 0 0 5px 0;
+        }
+
+        .page-header-content p {
+            color: #64748b;
+            margin: 0;
+            font-size: 14px;
+        }
+
+        .page-header .btn-primary-custom {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 10px 25px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .page-header .btn-primary-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(102, 126, 234, 0.3);
+            color: white;
+        }
+
+        /* Content Container */
+        .content-section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
         /* Stats Cards */
         .stat-card {
-            background: white; border-radius: 12px; padding: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
             border: 1px solid #f1f5f9;
         }
+
         .stat-icon {
-            width: 48px; height: 48px; border-radius: 10px;
-            display: flex; align-items: center; justify-content: center; font-size: 24px;
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
         }
-        .status-badge-active { background: #d1fae5; color: #065f46; border-radius: 20px; padding: 4px 12px; font-size: 0.8rem; }
-        .status-badge-full { background: #fee2e2; color: #991b1b; border-radius: 20px; padding: 4px 12px; font-size: 0.8rem; }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                margin-bottom: 20px;
+            }
+
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+                padding: 15px;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .page-header .btn-primary-custom {
+                margin-top: 15px;
+                width: 100%;
+                text-align: center;
+            }
+
+            .content-section {
+                padding: 15px;
+            }
+
+            .sidebar-logout {
+                position: relative;
+                bottom: auto;
+                margin-top: 20px;
+                width: calc(100% - 20px);
+            }
+        }
     </style>
 </head>
 <body>
 
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-auto col-md-3 col-xl-2 px-0 sidebar d-flex flex-column p-3">
-            <h5 class="fw-bold px-3 mb-4 mt-3 text-white">University SMS</h5>
-            <ul class="nav nav-pills flex-column mb-auto">
-                <li class="nav-item"><a th:href="@{/students}" class="nav-link px-3"><i class="bi bi-grid px-2"></i> Dashboard</a></li>
-                <li><a th:href="@{/register}" class="nav-link px-3"><i class="bi bi-person-plus px-2"></i> Registration</a></li>
-                <li><a th:href="@{/courses}" class="nav-link active px-3"><i class="bi bi-book px-2"></i> Course Management</a></li>
-                <li><a href="#" class="nav-link px-3"><i class="bi bi-mortarboard px-2"></i> Programs</a></li>
-                <li><a href="#" class="nav-link px-3"><i class="bi bi-file-earmark-text px-2"></i> Reports</a></li>
-            </ul>
+<div class="d-flex">
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <div class="logo">
+            <i class="bi bi-graph-up" style="font-size: 28px; color: white;"></i>
+            <h4>SMS</h4>
+            <small style="color: rgba(255, 255, 255, 0.7);">Student Management</small>
         </div>
 
-        <div class="col p-4 px-md-5">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h2 class="fw-bold mb-1">Course Management</h2>
-                    <p class="text-muted">Manage courses, instructors, and enrollment</p>
-                </div>
-                <a th:href="@{/courses/new}" class="btn btn-primary px-4 py-2">
-                    <i class="bi bi-plus-lg me-2"></i> Add New
-                </a>
-            </div>
+        <nav class="nav flex-column px-2">
+            <a th:href="@{/}" class="nav-link">
+                <i class="bi bi-speedometer2"></i>
+                <span>Dashboard</span>
+            </a>
+            <a th:href="@{/register}" class="nav-link">
+                <i class="bi bi-person-plus"></i>
+                <span>Student Registration</span>
+            </a>
+            <a th:href="@{/students}" class="nav-link">
+                <i class="bi bi-people"></i>
+                <span>Student Management</span>
+            </a>
+            <a th:href="@{/courses}" class="nav-link active">
+                <i class="bi bi-book"></i>
+                <span>Course Management</span>
+            </a>
+            <a th:href="@{/programs}" class="nav-link">
+                <i class="bi bi-mortarboard"></i>
+                <span>Programs</span>
+            </a>
+            <a th:href="@{/reports}" class="nav-link">
+                <i class="bi bi-bar-chart-line"></i>
+                <span>Reports</span>
+            </a>
+            <a th:href="@{/settings}" class="nav-link">
+                <i class="bi bi-gear"></i>
+                <span>Settings</span>
+            </a>
+        </nav>
 
-            <div class="row g-4 mb-4 mt-2">
-                <div class="col-md-3">
-                    <div class="stat-card d-flex align-items-center">
-                        <div class="stat-icon bg-primary-subtle text-primary me-3"><i class="bi bi-book"></i></div>
-                        <div><p class="text-muted mb-0 small">Total Courses</p><h4 class="fw-bold mb-0" th:text="${totalCourses}">0</h4></div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="stat-card d-flex align-items-center">
-                        <div class="stat-icon bg-success-subtle text-success me-3"><i class="bi bi-check2-square"></i></div>
-                        <div><p class="text-muted mb-0 small">Active Courses</p><h4 class="fw-bold mb-0" th:text="${activeCourses}">0</h4></div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="stat-card d-flex align-items-center">
-                        <div class="stat-icon bg-warning-subtle text-warning me-3"><i class="bi bi-journal-x"></i></div>
-                        <div><p class="text-muted mb-0 small">Full Courses</p><h4 class="fw-bold mb-0" th:text="${fullCourses}">0</h4></div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="stat-card d-flex align-items-center">
-                        <div class="stat-icon bg-info-subtle text-info me-3"><i class="bi bi-people"></i></div>
-                        <div><p class="text-muted mb-0 small">Total Enrolled</p><h4 class="fw-bold mb-0" th:text="${totalEnrolled}">0</h4></div>
-                    </div>
-                </div>
-            </div>
+        <div class="sidebar-logout">
+            <a th:href="@{/logout}" class="nav-link" style="background-color: rgba(255, 255, 255, 0.2); border-radius: 8px; justify-content: center;">
+                <i class="bi bi-box-arrow-right"></i>
+                <span>Logout</span>
+            </a>
+        </div>
+    </div>
 
-            <div class="bg-white rounded-4 shadow-sm p-4">
-                <table class="table table-hover align-middle">
-                    <thead class="text-muted small">
-                        <tr>
-                            <th>Course Code</th>
-                            <th>Course Name</th>
-                            <th>Credits</th>
-                            <th>Instructor</th>
-                            <th>Department</th>
-                            <th>Enrollment</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="course : ${courses}">
-                            <td class="fw-bold text-muted" th:text="${course.courseCode}"></td>
-                            <td class="fw-semibold" th:text="${course.courseName}"></td>
-                            <td th:text="${course.credits}"></td>
-                            <td th:text="${course.instructor}"></td>
-                            <td th:text="${course.department}"></td>
-                            <td><span class="text-primary fw-bold" th:text="${course.enrollment}"></span></td>
-                            <td>
-                                <span th:class="${course.status == 'Active' ? 'status-badge-active' : 'status-badge-full'}" 
-                                      th:text="${course.status}">Active</span>
-                            </td>
-                            <td>
-                                <a th:href="@{/courses/edit/{id}(id=${course.id})}" class="text-primary me-2"><i class="bi bi-pencil-square"></i></a>
-                                <a th:href="@{/courses/delete/{id}(id=${course.id})}" class="text-danger" onclick="return confirm('මෙම විෂය ඉවත් කිරීමට ඔබට සහතිකද?')"><i class="bi bi-trash"></i></a>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+        <div class="page-header">
+            <div class="page-header-content">
+                <h2>Course Management</h2>
+                <p>Manage courses, instructors, and enrollment</p>
             </div>
+            <a th:href="@{/courses/new}" class="btn btn-primary-custom">
+                <i class="bi bi-plus-lg me-2"></i> Add New Course
+            </a>
+        </div>
+
+        <!-- Stats Section -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-3">
+                <div class="stat-card d-flex align-items-center">
+                    <div class="stat-icon bg-primary-subtle text-primary me-3"><i class="bi bi-book"></i></div>
+                    <div>
+                        <p class="text-muted mb-0 small">Total Courses</p>
+                        <h4 class="fw-bold mb-0" th:text="${totalCourses}">0</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card d-flex align-items-center">
+                    <div class="stat-icon bg-success-subtle text-success me-3"><i class="bi bi-check2-square"></i></div>
+                    <div>
+                        <p class="text-muted mb-0 small">Active Courses</p>
+                        <h4 class="fw-bold mb-0" th:text="${activeCourses}">0</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card d-flex align-items-center">
+                    <div class="stat-icon bg-warning-subtle text-warning me-3"><i class="bi bi-journal-x"></i></div>
+                    <div>
+                        <p class="text-muted mb-0 small">Full Courses</p>
+                        <h4 class="fw-bold mb-0" th:text="${fullCourses}">0</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card d-flex align-items-center">
+                    <div class="stat-icon bg-info-subtle text-info me-3"><i class="bi bi-people"></i></div>
+                    <div>
+                        <p class="text-muted mb-0 small">Total Enrolled</p>
+                        <h4 class="fw-bold mb-0" th:text="${totalEnrolled}">0</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Courses Table -->
+        <div class="content-section">
+            <h5 class="mb-3 fw-bold">Courses List</h5>
+            <table class="table table-hover mb-0">
+                <thead class="text-muted">
+                    <tr>
+                        <th>Course Code</th>
+                        <th>Course Name</th>
+                        <th>Credits</th>
+                        <th>Semester</th>
+                        <th>Instructor</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="course : ${courses}">
+                        <td th:text="${course.courseCode}"></td>
+                        <td th:text="${course.courseName}"></td>
+                        <td th:text="${course.credits}"></td>
+                        <td th:text="${course.semester}"></td>
+                        <td th:text="${course.instructor}"></td>
+                        <td class="text-center">
+                            <a th:href="@{/courses/edit/{id}(id=${course.id})}" class="btn btn-sm text-primary">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <a th:href="@{/courses/delete/{id}(id=${course.id})}" 
+                               class="btn btn-sm text-danger"
+                               onclick="return confirm('Delete this course?')">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

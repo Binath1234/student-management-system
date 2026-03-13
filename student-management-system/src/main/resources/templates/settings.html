@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings | Student Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background-color: #f8fafc; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; overflow-x: hidden; }
+
+        .sidebar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px 0;
+            position: fixed;
+            width: 250px;
+            left: 0;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .sidebar .logo { color: white; padding: 20px; text-align: center; border-bottom: 1px solid rgba(255, 255, 255, 0.2); margin-bottom: 20px; }
+        .sidebar .logo h4 { font-weight: 700; letter-spacing: 0.5px; margin: 0; }
+        .sidebar .nav-link { color: rgba(255, 255, 255, 0.8); padding: 12px 20px; margin: 5px 10px; border-radius: 8px; transition: all 0.3s ease; cursor: pointer; text-decoration: none; display: flex; align-items: center; font-weight: 500; border-left: 4px solid transparent; }
+        .sidebar .nav-link:hover { background-color: rgba(255, 255, 255, 0.15); color: white; transform: translateX(5px); }
+        .sidebar .nav-link.active { background-color: rgba(255, 255, 255, 0.25); color: white; border-left-color: white; }
+        .sidebar .nav-link i { margin-right: 12px; font-size: 18px; }
+        .sidebar-logout { position: absolute; bottom: 20px; width: 100%; padding: 0 10px; }
+        .sidebar-logout .nav-link { width: calc(100% - 20px); justify-content: center; margin: 0 10px; }
+
+        .main-content { margin-left: 250px; padding: 30px; width: calc(100% - 250px); min-height: 100vh; }
+
+        .settings-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border: none;
+            overflow: hidden;
+        }
+        .settings-card .card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 18px 25px;
+            font-weight: 600;
+            font-size: 16px;
+            border: none;
+        }
+        .settings-card .card-header i { margin-right: 10px; }
+        .settings-card .card-body { padding: 30px; }
+
+        .form-label { font-weight: 600; color: #475569; font-size: 0.875rem; margin-bottom: 6px; }
+        .form-control { border-radius: 8px; border: 1.5px solid #e2e8f0; padding: 10px 15px; transition: all 0.3s ease; }
+        .form-control:focus { border-color: #667eea; box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15); }
+        .form-control[readonly] { background-color: #f8fafc; color: #64748b; }
+
+        .btn-save {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 10px 30px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .btn-save:hover { transform: translateY(-2px); box-shadow: 0 8px 16px rgba(102, 126, 234, 0.3); color: white; }
+
+        .btn-cancel {
+            background: #f1f5f9;
+            border: 1.5px solid #e2e8f0;
+            padding: 10px 30px;
+            border-radius: 8px;
+            color: #475569;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .btn-cancel:hover { background: #e2e8f0; color: #1e293b; }
+
+        .alert { border-radius: 8px; }
+
+        @media (max-width: 768px) {
+            .sidebar { width: 100%; height: auto; position: relative; margin-bottom: 20px; }
+            .main-content { margin-left: 0; width: 100%; padding: 15px; }
+            .sidebar-logout { position: relative; bottom: auto; margin-top: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="d-flex">
+    <!-- SIDEBAR NAVIGATION -->
+    <div class="sidebar">
+        <div class="logo">
+            <i class="bi bi-graph-up" style="font-size: 28px; color: white;"></i>
+            <h4>SMS</h4>
+            <small style="color: rgba(255, 255, 255, 0.7);">Student Management</small>
+        </div>
+
+        <nav class="nav flex-column px-2">
+            <a th:href="@{/}" class="nav-link">
+                <i class="bi bi-speedometer2"></i>
+                <span>Dashboard</span>
+            </a>
+            <a th:href="@{/register}" class="nav-link">
+                <i class="bi bi-person-plus"></i>
+                <span>Student Registration</span>
+            </a>
+            <a th:href="@{/students}" class="nav-link">
+                <i class="bi bi-people"></i>
+                <span>Student Management</span>
+            </a>
+            <a th:href="@{/courses}" class="nav-link">
+                <i class="bi bi-book"></i>
+                <span>Course Management</span>
+            </a>
+            <a th:href="@{/programs}" class="nav-link">
+                <i class="bi bi-mortarboard"></i>
+                <span>Programs</span>
+            </a>
+            <a th:href="@{/reports}" class="nav-link">
+                <i class="bi bi-bar-chart-line"></i>
+                <span>Reports</span>
+            </a>
+            <a th:href="@{/settings}" class="nav-link active">
+                <i class="bi bi-gear"></i>
+                <span>Settings</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-logout">
+            <a th:href="@{/logout}" class="nav-link" style="background-color: rgba(255, 255, 255, 0.2); border-radius: 8px; justify-content: center;">
+                <i class="bi bi-box-arrow-right"></i>
+                <span>Logout</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+        <div class="mb-4">
+            <h2 class="fw-bold">Settings</h2>
+            <p class="text-muted small">Manage your profile information and account security</p>
+        </div>
+
+        <!-- Success / Error Messages -->
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle me-2"></i><span th:text="${success}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle me-2"></i><span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <form th:action="@{/settings}" method="post">
+            <div class="row g-4">
+                <!-- Profile Information -->
+                <div class="col-lg-6">
+                    <div class="settings-card">
+                        <div class="card-header">
+                            <i class="bi bi-person-circle"></i>Profile Information
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="form-label">Full Name</label>
+                                <input type="text" class="form-control" name="fullName" th:value="${fullName}" placeholder="Admin User">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Phone Number</label>
+                                <input type="tel" class="form-control" name="phone" th:value="${phone}" placeholder="+1 (555) 123-4567">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Department</label>
+                                <input type="text" class="form-control" name="department" th:value="${department}" placeholder="IT Department">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Change Password -->
+                <div class="col-lg-6">
+                    <div class="settings-card">
+                        <div class="card-header">
+                            <i class="bi bi-shield-lock"></i>Change Password
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="form-label">Current Password</label>
+                                <input type="password" class="form-control" name="currentPassword" placeholder="Enter current password">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">New Password</label>
+                                <input type="password" class="form-control" name="newPassword" placeholder="Enter new password">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Confirm Password</label>
+                                <input type="password" class="form-control" name="confirmPassword" placeholder="Confirm new password">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Email & Role (read-only) -->
+                <div class="col-lg-6">
+                    <div class="settings-card">
+                        <div class="card-header">
+                            <i class="bi bi-envelope"></i>Account Details
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="form-label">Email Address</label>
+                                <input type="email" class="form-control" name="email" th:value="${email}" placeholder="admin@university.edu">
+                            </div>
+                            <div class="mb-0">
+                                <label class="form-label">Role</label>
+                                <input type="text" class="form-control" value="System Administrator" readonly>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="d-flex justify-content-end gap-3 mt-4">
+                <a th:href="@{/}" class="btn btn-cancel">Cancel</a>
+                <button type="submit" class="btn btn-save">
+                    <i class="bi bi-check-lg me-1"></i>Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

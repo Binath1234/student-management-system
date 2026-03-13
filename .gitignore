@@ -1,0 +1,14 @@
+﻿# Database files
+data/
+student-management-system/data/
+
+# Build output
+student-management-system/target/
+
+# IDE files
+.vscode/
+.idea/
+*.iml
+
+# JVM crash logs
+*.log

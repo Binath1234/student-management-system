@@ -25,9 +25,9 @@ public class StudentManagementSystemApplication {
                 c1.setCredits(3);
                 c1.setInstructor("Dr. Sarah Mitchell");
                 c1.setDepartment("Computer Science");
-                c1.setEnrollment("45/50");
                 c1.setSchedule("Mon/Wed 9:00-10:30 AM");
                 c1.setStatus("Active");
+                c1.setSemester("FALL-2024");
 
                 Course c2 = new Course();
                 c2.setCourseCode("CS201");
@@ -35,9 +35,9 @@ public class StudentManagementSystemApplication {
                 c2.setCredits(4);
                 c2.setInstructor("Prof. Michael Zhang");
                 c2.setDepartment("Computer Science");
-                c2.setEnrollment("40/40");
                 c2.setSchedule("Tue/Thu 1:00-2:30 PM");
-                c2.setStatus("Full");
+                c2.setStatus("Active");
+                c2.setSemester("FALL-2024");
 
                 repository.save(c1);
                 repository.save(c2);

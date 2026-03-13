@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Registration - SMS</title>
+    <title th:text="${pageTitle} + ' | SMS'">SMS</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
     <style>
         * {
             margin: 0;
@@ -30,7 +31,6 @@
             top: 0;
             z-index: 1000;
             box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
-            transition: width 0.3s ease;
         }
 
         .sidebar .logo {
@@ -44,16 +44,13 @@
         .sidebar .logo h4 {
             font-weight: 700;
             letter-spacing: 0.5px;
-        }
-
-        .sidebar .nav-item {
-            margin: 5px 0;
+            margin: 0;
         }
 
         .sidebar .nav-link {
             color: rgba(255, 255, 255, 0.8);
             padding: 12px 20px;
-            margin: 0 10px;
+            margin: 5px 10px;
             border-radius: 8px;
             transition: all 0.3s ease;
             cursor: pointer;
@@ -99,69 +96,119 @@
             margin-left: 250px;
             padding: 30px;
             width: calc(100% - 250px);
-            transition: all 0.3s ease;
+            min-height: 100vh;
         }
-        
-        .form-container { 
-            background: white; 
-            border-radius: 12px; 
-            padding: 30px; 
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); 
-        }
-        
+
         .page-header {
             background: white;
-            padding: 20px 30px;
+            padding: 25px;
             border-radius: 12px;
             margin-bottom: 30px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        
+
         .page-header h2 {
+            color: #1e293b;
             font-weight: 700;
             margin: 0;
-            color: #1e293b;
         }
-        
+
         .page-header p {
-            margin: 5px 0 0;
             color: #64748b;
+            margin: 5px 0 0 0;
             font-size: 14px;
         }
-        
-        /* Responsive Design */
+
+        .page-header-title {
+            flex: 1;
+        }
+
+        .page-header-action {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-primary-custom {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 10px 25px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(102, 126, 234, 0.3);
+            color: white;
+        }
+
+        /* Content Container */
+        .content-section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .section-title {
+            color: #1e293b;
+            font-weight: 700;
+            margin-bottom: 25px;
+            font-size: 18px;
+        }
+
+        /* Mobile Responsive */
         @media (max-width: 768px) {
-            .sidebar { 
-                width: 100%; 
+            .sidebar {
+                width: 100%;
+                height: auto;
                 position: relative;
                 margin-bottom: 20px;
             }
-            .main-content { 
-                margin-left: 0; 
-                width: 100%; 
+
+            .main-content {
+                margin-left: 0;
+                width: 100%;
                 padding: 15px;
             }
-        }
 
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            color: white;
-            transition: all 0.3s ease;
-        }
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
 
-        .btn-primary:hover, .btn-primary:focus, .btn-primary:active {
-            background: linear-gradient(135deg, #5a6fd6 0%, #6a4296 100%);
-            border: none;
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 16px rgba(102, 126, 234, 0.3);
+            .page-header-action {
+                margin-top: 15px;
+                width: 100%;
+            }
+
+            .content-section {
+                padding: 15px;
+            }
+
+            .sidebar-logout {
+                position: relative;
+                bottom: auto;
+                margin-top: 20px;
+                width: calc(100% - 20px);
+            }
         }
     </style>
+
+    <th:block layout:fragment="extra-css"></th:block>
 </head>
 <body>
 
-<div class="d-flex flex-wrap">
+    <!-- SIDEBAR NAVIGATION -->
     <div class="sidebar">
         <div class="logo">
             <i class="bi bi-graph-up" style="font-size: 28px; color: white;"></i>
@@ -170,31 +217,31 @@
         </div>
 
         <nav class="nav flex-column px-2">
-            <a th:href="@{/}" class="nav-link">
+            <a th:href="@{/}" class="nav-link" th:classappend="${#request.requestURI == '/' ? 'active' : ''}">
                 <i class="bi bi-speedometer2"></i>
                 <span>Dashboard</span>
             </a>
-            <a th:href="@{/register}" class="nav-link active">
+            <a th:href="@{/students}" class="nav-link" th:classappend="${#request.requestURI.contains('students') ? 'active' : ''}">
                 <i class="bi bi-person-plus"></i>
                 <span>Student Registration</span>
             </a>
-            <a th:href="@{/students}" class="nav-link">
+            <a href="#" class="nav-link" th:classappend="${#request.requestURI.contains('student') || #request.requestURI.contains('management') ? 'active' : ''}">
                 <i class="bi bi-people"></i>
                 <span>Student Management</span>
             </a>
-            <a th:href="@{/courses}" class="nav-link">
+            <a th:href="@{/courses}" class="nav-link" th:classappend="${#request.requestURI.contains('courses') ? 'active' : ''}">
                 <i class="bi bi-book"></i>
                 <span>Course Management</span>
             </a>
-            <a th:href="@{/programs}" class="nav-link">
+            <a th:href="@{/programs}" class="nav-link" th:classappend="${#request.requestURI.contains('programs') ? 'active' : ''}">
                 <i class="bi bi-mortarboard"></i>
                 <span>Programs</span>
             </a>
-            <a th:href="@{/reports}" class="nav-link">
+            <a th:href="@{/reports}" class="nav-link" th:classappend="${#request.requestURI.contains('reports') ? 'active' : ''}">
                 <i class="bi bi-bar-chart-line"></i>
                 <span>Reports</span>
             </a>
-            <a th:href="@{/settings}" class="nav-link">
+            <a th:href="@{/settings}" class="nav-link" th:classappend="${#request.requestURI.contains('settings') ? 'active' : ''}">
                 <i class="bi bi-gear"></i>
                 <span>Settings</span>
             </a>
@@ -208,62 +255,26 @@
         </div>
     </div>
 
+    <!-- MAIN CONTENT AREA -->
     <div class="main-content">
-        <div class="page-header mb-4">
-            <h2>Student Registration</h2>
-            <p>Register a new student to the system</p>
-        </div>
-
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                <div class="form-container">
-                    <form th:action="@{/students/save}" th:object="${student}" method="POST">
-                        
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Full Name</label>
-                            <input type="text" th:field="*{fullName}" class="form-control py-2" placeholder="Enter full name" required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Date of Birth</label>
-                            <input type="date" th:field="*{dateOfBirth}" class="form-control py-2" required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Email Address</label>
-                            <input type="email" th:field="*{email}" class="form-control py-2" placeholder="example@university.com" required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Phone Number</label>
-                            <input type="tel" th:field="*{phone}" class="form-control py-2" placeholder="Enter phone number" required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Address</label>
-                            <textarea th:field="*{address}" class="form-control py-2" rows="3" placeholder="Enter residential address" required></textarea>
-                        </div>
-
-                        <div class="mb-4">
-                            <label class="form-label fw-semibold">Degree Program</label>
-                            <select th:field="*{program}" class="form-select py-2" required>
-                                <option value="">Select a program</option>
-                                <option th:each="prog : ${programs}" th:value="${prog.programName}" th:text="${prog.programName}"></option>
-                            </select>
-                        </div>
-
-                        <div class="d-flex gap-2">
-                            <button type="submit" class="btn btn-primary px-4 py-2 w-100">
-                                <i class="bi bi-check-circle me-2"></i>Register Student
-                            </button>
-                            <a th:href="@{/students}" class="btn btn-outline-secondary px-4 py-2 w-100">Cancel</a>
-                        </div>
-                    </form>
-                </div>
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="page-header-title">
+                <h2 th:text="${pageTitle}">Page Title</h2>
+                <p th:text="${pageSubtitle}">Page Subtitle</p>
+            </div>
+            <div class="page-header-action" th:if="${pageAction != null}">
+                <th:block th:replace="${pageAction}"></th:block>
             </div>
         </div>
-    </div>
-</div>
 
+        <!-- Page Content -->
+        <div layout:fragment="content">
+            <!-- Content goes here -->
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <th:block layout:fragment="extra-js"></th:block>
 </body>
 </html>

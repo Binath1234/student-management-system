@@ -25,7 +25,8 @@ public class AdminController {
                                Model model) {
         
         // Check if credentials match
-        if("admin".equals(username) && "123".equals(password)) {
+        Admin admin = adminRepository.findByUsername(username);
+        if (admin != null && admin.getPassword().equals(password)) {
             session.setAttribute("loggedInAdmin", username);
             return "redirect:/students";
         } else {

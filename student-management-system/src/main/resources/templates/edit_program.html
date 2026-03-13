@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add New Course - SMS</title>
+    <title>Edit Program - SMS</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
@@ -49,8 +49,8 @@
             <a th:href="@{/}" class="nav-link"><i class="bi bi-speedometer2"></i><span>Dashboard</span></a>
             <a th:href="@{/register}" class="nav-link"><i class="bi bi-person-plus"></i><span>Student Registration</span></a>
             <a th:href="@{/students}" class="nav-link"><i class="bi bi-people"></i><span>Student Management</span></a>
-            <a th:href="@{/courses}" class="nav-link active"><i class="bi bi-book"></i><span>Course Management</span></a>
-            <a th:href="@{/programs}" class="nav-link"><i class="bi bi-mortarboard"></i><span>Programs</span></a>
+            <a th:href="@{/courses}" class="nav-link"><i class="bi bi-book"></i><span>Course Management</span></a>
+            <a th:href="@{/programs}" class="nav-link active"><i class="bi bi-mortarboard"></i><span>Programs</span></a>
             <a th:href="@{/reports}" class="nav-link"><i class="bi bi-bar-chart-line"></i><span>Reports</span></a>
             <a th:href="@{/settings}" class="nav-link"><i class="bi bi-gear"></i><span>Settings</span></a>
         </nav>
@@ -63,47 +63,63 @@
 
     <div class="main-content">
         <div class="page-header">
-            <h2>Add New Course</h2>
-            <p>Create a new course in the system</p>
+            <h2>Edit Academic Program</h2>
+            <p>Update program details and configuration</p>
         </div>
         <div class="row justify-content-center">
-            <div class="col-md-8">
+            <div class="col-md-10">
                 <div class="form-container">
-                    <form th:action="@{/courses}" th:object="${course}" method="POST">
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Course Code</label>
-                            <input type="text" th:field="*{courseCode}" class="form-control py-2" placeholder="e.g. CS101" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Course Name</label>
-                            <input type="text" th:field="*{courseName}" class="form-control py-2" placeholder="e.g. Database Systems" required>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col">
-                                <label class="form-label fw-semibold">Credits</label>
-                                <input type="number" th:field="*{credits}" class="form-control py-2" required>
+                    <form th:action="@{/programs/update/{id}(id=${program.id})}" th:object="${program}" method="POST">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Program Code</label>
+                                <input type="text" th:field="*{programCode}" class="form-control py-2" required>
                             </div>
-                            <div class="col">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Program Name</label>
+                                <input type="text" th:field="*{programName}" class="form-control py-2" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Degree Type</label>
+                                <select th:field="*{degreeType}" class="form-select py-2">
+                                    <option value="Bachelor">Bachelor</option>
+                                    <option value="Master">Master</option>
+                                    <option value="Diploma">Diploma</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Department</label>
+                                <input type="text" th:field="*{department}" class="form-control py-2">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Duration</label>
+                                <input type="text" th:field="*{duration}" class="form-control py-2">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Credits</label>
+                                <input type="number" th:field="*{credits}" class="form-control py-2">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Enrolled Students</label>
+                                <input type="number" th:field="*{enrolled}" class="form-control py-2">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Coordinator</label>
+                                <input type="text" th:field="*{coordinator}" class="form-control py-2">
+                            </div>
+                            <div class="col-md-6">
                                 <label class="form-label fw-semibold">Status</label>
                                 <select th:field="*{status}" class="form-select py-2">
                                     <option value="Active">Active</option>
-                                    <option value="Full">Full</option>
+                                    <option value="Inactive">Inactive</option>
                                 </select>
                             </div>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Instructor</label>
-                            <input type="text" th:field="*{instructor}" class="form-control py-2" required>
-                        </div>
-                        <div class="mb-4">
-                            <label class="form-label fw-semibold">Department</label>
-                            <input type="text" th:field="*{department}" class="form-control py-2" required>
-                        </div>
-                        <div class="d-flex gap-2">
+                        <div class="mt-4 pt-3 border-top d-flex gap-2">
                             <button type="submit" class="btn btn-primary px-4 py-2 w-100">
-                                <i class="bi bi-check-circle me-2"></i>Save Course
+                                <i class="bi bi-check-circle me-2"></i>Save Changes
                             </button>
-                            <a th:href="@{/courses}" class="btn btn-outline-secondary px-4 py-2 w-100">Cancel</a>
+                            <a th:href="@{/programs}" class="btn btn-outline-secondary px-4 py-2 w-100">Cancel</a>
                         </div>
                     </form>
                 </div>
