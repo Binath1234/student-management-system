@@ -59,4 +59,10 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
      */
     @Query("SELECT c FROM Course c WHERE c.instructor = :instructor AND c.status = 'Active'")
     List<Course> findByInstructor(@Param("instructor") String instructor);
+
+    @Query("SELECT c FROM Course c WHERE c.programName = :programName AND c.status = 'Active'")
+    List<Course> findByProgramName(@Param("programName") String programName);
+
+    @Query("SELECT c.courseCode FROM Course c WHERE c.courseCode LIKE CONCAT(:prefix, '%')")
+    List<String> findCourseCodesByPrefix(@Param("prefix") String prefix);
 }

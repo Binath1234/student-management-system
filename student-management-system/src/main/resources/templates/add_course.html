@@ -30,6 +30,55 @@
         .page-header p { color: #64748b; margin: 0; font-size: 14px; }
         .form-container { background: white; border-radius: 12px; padding: 30px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); }
 
+        .btn-purple {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none; color: white; font-weight: 600; transition: all 0.3s ease;
+        }
+        .btn-purple:hover {
+            background: linear-gradient(135deg, #5a6fd6 0%, #6a4296 100%);
+            color: white; transform: translateY(-2px); box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .program-section { margin-top: 10px; }
+        .program-section h6 { color: #1e293b; font-weight: 700; margin-bottom: 15px; }
+        .program-card {
+            border: 2px solid #e2e8f0; border-radius: 10px; padding: 12px 16px; cursor: pointer;
+            transition: all 0.3s ease; display: flex; align-items: center; gap: 12px; margin-bottom: 10px;
+        }
+        .program-card:hover { border-color: #667eea; background: #f8f7ff; }
+        .program-card.selected { border-color: #667eea; background: linear-gradient(135deg, rgba(102,126,234,0.08), rgba(118,75,162,0.08)); }
+        .program-card input[type="checkbox"] { display: none; }
+        .program-card .check-circle {
+            width: 24px; height: 24px; border-radius: 50%; border: 2px solid #cbd5e1;
+            display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; flex-shrink: 0;
+        }
+        .program-card.selected .check-circle {
+            background: linear-gradient(135deg, #667eea, #764ba2); border-color: #667eea;
+        }
+        .program-card .check-circle i { color: white; font-size: 12px; display: none; }
+        .program-card.selected .check-circle i { display: block; }
+        .program-card .program-info { flex: 1; }
+        .program-card .program-name { font-weight: 600; color: #1e293b; font-size: 14px; }
+        .program-card .program-meta { font-size: 12px; color: #64748b; }
+
+        .code-preview {
+            background: linear-gradient(135deg, rgba(102,126,234,0.1), rgba(118,75,162,0.1));
+            border: 1px solid rgba(102,126,234,0.3); border-radius: 10px; padding: 16px; margin-top: 20px;
+        }
+        .code-preview h6 { color: #667eea; font-weight: 700; margin-bottom: 10px; }
+        .code-badge {
+            display: inline-block; background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white; padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 600;
+            margin: 4px; animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+
+        .selected-count {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white; padding: 2px 10px; border-radius: 20px; font-size: 12px; font-weight: 600;
+        }
+        .section-divider { border-top: 2px solid #f1f5f9; margin: 25px 0; }
+
         @media (max-width: 768px) {
             .sidebar { width: 100%; height: auto; position: relative; margin-bottom: 20px; }
             .main-content { margin-left: 0; width: 100%; padding: 15px; }
@@ -63,44 +112,106 @@
 
     <div class="main-content">
         <div class="page-header">
-            <h2>Add New Course</h2>
-            <p>Create a new course in the system</p>
+            <h2><i class="bi bi-plus-circle me-2" style="color: #667eea;"></i>Add New Course</h2>
+            <p>Fill in the course details and select degree programs. Course code will be auto-generated.</p>
         </div>
         <div class="row justify-content-center">
-            <div class="col-md-8">
+            <div class="col-lg-9">
                 <div class="form-container">
-                    <form th:action="@{/courses}" th:object="${course}" method="POST">
+                    <form id="courseForm" th:action="@{/courses}" th:object="${course}" method="POST">
+
+                        <!-- Course Details Section -->
+                        <h6 class="mb-3" style="color: #667eea; font-weight: 700;">
+                            <i class="bi bi-journal-text me-2"></i>Course Details
+                        </h6>
+
                         <div class="mb-3">
-                            <label class="form-label fw-semibold">Course Code</label>
-                            <input type="text" th:field="*{courseCode}" class="form-control py-2" placeholder="e.g. CS101" required>
+                            <label class="form-label fw-semibold">Course Name <span class="text-danger">*</span></label>
+                            <input type="text" th:field="*{courseName}" class="form-control py-2" placeholder="e.g. Database Management Systems" required>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Course Name</label>
-                            <input type="text" th:field="*{courseName}" class="form-control py-2" placeholder="e.g. Database Systems" required>
-                        </div>
+
                         <div class="row mb-3">
-                            <div class="col">
-                                <label class="form-label fw-semibold">Credits</label>
-                                <input type="number" th:field="*{credits}" class="form-control py-2" required>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Credits <span class="text-danger">*</span></label>
+                                <input type="number" th:field="*{credits}" class="form-control py-2" min="1" max="6" required>
                             </div>
-                            <div class="col">
+                            <div class="col-md-4">
                                 <label class="form-label fw-semibold">Status</label>
                                 <select th:field="*{status}" class="form-select py-2">
                                     <option value="Active">Active</option>
                                     <option value="Full">Full</option>
                                 </select>
                             </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Semester</label>
+                                <select th:field="*{semester}" class="form-select py-2">
+                                    <option value="">-- Select --</option>
+                                    <option value="Semester 1">Semester 1</option>
+                                    <option value="Semester 2">Semester 2</option>
+                                    <option value="Semester 3">Semester 3</option>
+                                    <option value="Semester 4">Semester 4</option>
+                                    <option value="Semester 5">Semester 5</option>
+                                    <option value="Semester 6">Semester 6</option>
+                                    <option value="Semester 7">Semester 7</option>
+                                    <option value="Semester 8">Semester 8</option>
+                                </select>
+                            </div>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Instructor</label>
-                            <input type="text" th:field="*{instructor}" class="form-control py-2" required>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Instructor <span class="text-danger">*</span></label>
+                                <input type="text" th:field="*{instructor}" class="form-control py-2" placeholder="e.g. Dr. Amal Perera" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Department <span class="text-danger">*</span></label>
+                                <input type="text" th:field="*{department}" class="form-control py-2" placeholder="e.g. Computer Science" required>
+                            </div>
                         </div>
-                        <div class="mb-4">
-                            <label class="form-label fw-semibold">Department</label>
-                            <input type="text" th:field="*{department}" class="form-control py-2" required>
+
+                        <div class="section-divider"></div>
+
+                        <!-- Program Selection Section -->
+                        <div class="program-section">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <h6 class="mb-0" style="color: #667eea; font-weight: 700;">
+                                    <i class="bi bi-mortarboard me-2"></i>Assign to Degree Programs <span class="text-danger">*</span>
+                                </h6>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="selected-count" id="selectedCount">0 selected</span>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" id="selectAllBtn" onclick="toggleSelectAll()">Select All</button>
+                                </div>
+                            </div>
+                            <p class="text-muted mb-3" style="font-size: 13px;">Select one or more degree programs for this course. A separate course entry with auto-generated code will be created for each.</p>
+
+                            <div class="row" id="programList">
+                                <div class="col-md-6" th:each="program : ${programs}">
+                                    <label class="program-card" th:attr="data-program=${program.programName}">
+                                        <input type="checkbox" name="programNames" th:value="${program.programName}" onchange="onProgramToggle(this)">
+                                        <div class="check-circle"><i class="bi bi-check"></i></div>
+                                        <div class="program-info">
+                                            <div class="program-name" th:text="${program.programName}">BSc in Computer Science</div>
+                                            <div class="program-meta">
+                                                <span th:text="${program.degreeType}">Bachelor</span> &bull;
+                                                <span th:text="${program.duration}">4 Years</span> &bull;
+                                                <span th:text="${program.department}">Computer Science</span>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
                         </div>
+
+                        <!-- Auto-Generated Course Codes Preview -->
+                        <div class="code-preview" id="codePreview" style="display: none;">
+                            <h6><i class="bi bi-code-square me-2"></i>Auto-Generated Course Codes</h6>
+                            <div id="codeList"></div>
+                        </div>
+
+                        <div class="section-divider"></div>
+
                         <div class="d-flex gap-2">
-                            <button type="submit" class="btn btn-primary px-4 py-2 w-100">
+                            <button type="submit" class="btn btn-purple px-4 py-2 w-100" id="submitBtn" disabled>
                                 <i class="bi bi-check-circle me-2"></i>Save Course
                             </button>
                             <a th:href="@{/courses}" class="btn btn-outline-secondary px-4 py-2 w-100">Cancel</a>
@@ -111,6 +222,76 @@
         </div>
     </div>
 </div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function onProgramToggle(checkbox) {
+        const card = checkbox.closest('.program-card');
+        if (checkbox.checked) {
+            card.classList.add('selected');
+        } else {
+            card.classList.remove('selected');
+        }
+        updateSelection();
+    }
+
+    function toggleSelectAll() {
+        const checkboxes = document.querySelectorAll('input[name="programNames"]');
+        const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+        checkboxes.forEach(cb => {
+            cb.checked = !allChecked;
+            const card = cb.closest('.program-card');
+            if (cb.checked) {
+                card.classList.add('selected');
+            } else {
+                card.classList.remove('selected');
+            }
+        });
+        document.getElementById('selectAllBtn').textContent = allChecked ? 'Select All' : 'Deselect All';
+        updateSelection();
+    }
+
+    function updateSelection() {
+        const checked = document.querySelectorAll('input[name="programNames"]:checked');
+        const count = checked.length;
+        document.getElementById('selectedCount').textContent = count + ' selected';
+        document.getElementById('submitBtn').disabled = count === 0;
+
+        const allCheckboxes = document.querySelectorAll('input[name="programNames"]');
+        const allChecked = Array.from(allCheckboxes).every(cb => cb.checked);
+        document.getElementById('selectAllBtn').textContent = allChecked ? 'Deselect All' : 'Select All';
+
+        // Fetch auto-generated codes for selected programs
+        const codePreview = document.getElementById('codePreview');
+        const codeList = document.getElementById('codeList');
+
+        if (count === 0) {
+            codePreview.style.display = 'none';
+            codeList.innerHTML = '';
+            return;
+        }
+
+        codePreview.style.display = 'block';
+        codeList.innerHTML = '<span class="text-muted" style="font-size: 13px;">Generating codes...</span>';
+
+        const promises = Array.from(checked).map(cb => {
+            const programName = cb.value;
+            return fetch('/api/courses/next-code?programName=' + encodeURIComponent(programName))
+                .then(res => res.json())
+                .then(data => ({ programName: programName, code: data.courseCode }));
+        });
+
+        Promise.all(promises).then(results => {
+            codeList.innerHTML = '';
+            results.forEach(r => {
+                const badge = document.createElement('span');
+                badge.className = 'code-badge';
+                badge.innerHTML = '<strong>' + r.code + '</strong> &mdash; ' + r.programName;
+                codeList.appendChild(badge);
+                codeList.appendChild(document.createElement('br'));
+            });
+        });
+    }
+</script>
 </body>
 </html>

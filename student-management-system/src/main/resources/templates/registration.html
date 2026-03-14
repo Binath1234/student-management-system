@@ -108,6 +108,88 @@
             padding: 30px; 
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); 
         }
+
+        /* Course Selection Styles */
+        .course-section {
+            display: none;
+            margin-top: 10px;
+            animation: fadeIn 0.4s ease;
+        }
+        .course-section.show {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .course-section-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px 10px 0 0;
+            font-weight: 600;
+        }
+        .course-section-body {
+            border: 2px solid #e2e8f0;
+            border-top: none;
+            border-radius: 0 0 10px 10px;
+            padding: 20px;
+            background: #fafbfc;
+        }
+        .course-card {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .course-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+            transform: translateY(-2px);
+        }
+        .course-card.selected {
+            border-color: #667eea;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.08), rgba(118, 75, 162, 0.08));
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+        .course-card .form-check-input:checked {
+            background-color: #667eea;
+            border-color: #667eea;
+        }
+        .course-code {
+            font-weight: 700;
+            color: #667eea;
+            font-size: 14px;
+        }
+        .course-name {
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 15px;
+        }
+        .course-meta {
+            font-size: 13px;
+            color: #64748b;
+        }
+        .course-loading {
+            text-align: center;
+            padding: 30px;
+            color: #64748b;
+        }
+        .no-courses {
+            text-align: center;
+            padding: 30px;
+            color: #94a3b8;
+        }
+        .selected-count {
+            background: rgba(255,255,255,0.2);
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 13px;
+            margin-left: 10px;
+        }
         
         .page-header {
             background: white;
@@ -246,13 +328,27 @@
 
                         <div class="mb-4">
                             <label class="form-label fw-semibold">Degree Program</label>
-                            <select th:field="*{program}" class="form-select py-2" required>
+                            <select th:field="*{program}" class="form-select py-2" id="programSelect" required>
                                 <option value="">Select a program</option>
                                 <option th:each="prog : ${programs}" th:value="${prog.programName}" th:text="${prog.programName}"></option>
                             </select>
                         </div>
 
-                        <div class="d-flex gap-2">
+                        <!-- Course Enrollment Section -->
+                        <div class="course-section" id="courseSection">
+                            <div class="course-section-header d-flex align-items-center justify-content-between">
+                                <span><i class="bi bi-journal-bookmark-fill me-2"></i>Available Courses for this Program</span>
+                                <span class="selected-count" id="selectedCount">0 selected</span>
+                            </div>
+                            <div class="course-section-body" id="courseList">
+                                <div class="course-loading">
+                                    <div class="spinner-border text-primary spinner-border-sm me-2" role="status"></div>
+                                    Loading courses...
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2 mt-4">
                             <button type="submit" class="btn btn-primary px-4 py-2 w-100">
                                 <i class="bi bi-check-circle me-2"></i>Register Student
                             </button>
@@ -264,6 +360,94 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const programSelect = document.getElementById('programSelect');
+    const courseSection = document.getElementById('courseSection');
+    const courseList = document.getElementById('courseList');
+    const selectedCount = document.getElementById('selectedCount');
+
+    programSelect.addEventListener('change', function() {
+        const program = this.value;
+        if (!program) {
+            courseSection.classList.remove('show');
+            courseList.innerHTML = '';
+            return;
+        }
+
+        // Show section with loading
+        courseSection.classList.add('show');
+        courseList.innerHTML = '<div class="course-loading"><div class="spinner-border text-primary spinner-border-sm me-2" role="status"></div>Loading courses...</div>';
+
+        fetch('/api/courses/by-program?program=' + encodeURIComponent(program))
+            .then(response => response.json())
+            .then(courses => {
+                if (courses.length === 0) {
+                    courseList.innerHTML = '<div class="no-courses"><i class="bi bi-inbox" style="font-size: 32px; display: block; margin-bottom: 10px;"></i>No courses available for this program yet</div>';
+                    updateCount();
+                    return;
+                }
+
+                let html = '<p class="text-muted mb-3" style="font-size: 13px;"><i class="bi bi-info-circle me-1"></i>Select the courses to enroll this student in:</p>';
+                courses.forEach(function(course) {
+                    html += '<label class="course-card d-flex align-items-start" for="course_' + course.id + '">'
+                        + '<div class="form-check me-3 mt-1">'
+                        + '<input class="form-check-input course-checkbox" type="checkbox" name="courseIds" value="' + course.id + '" id="course_' + course.id + '">'
+                        + '</div>'
+                        + '<div class="flex-grow-1">'
+                        + '<div class="d-flex justify-content-between align-items-start">'
+                        + '<div>'
+                        + '<span class="course-code">' + course.courseCode + '</span>'
+                        + '<div class="course-name">' + course.courseName + '</div>'
+                        + '</div>'
+                        + '<span class="badge" style="background: linear-gradient(135deg, #667eea, #764ba2); font-size: 12px;">' + course.credits + ' Credits</span>'
+                        + '</div>'
+                        + '<div class="course-meta mt-1">'
+                        + '<i class="bi bi-person me-1"></i>' + course.instructor
+                        + '<span class="ms-3"><i class="bi bi-calendar me-1"></i>' + course.semester + '</span>'
+                        + '</div>'
+                        + '</div>'
+                        + '</label>';
+                });
+
+                // Add select all option
+                html = '<div class="d-flex justify-content-end mb-2"><button type="button" class="btn btn-sm btn-outline-primary" id="selectAllBtn"><i class="bi bi-check2-all me-1"></i>Select All</button></div>' + html;
+                courseList.innerHTML = html;
+
+                // Toggle card selected style on checkbox change
+                document.querySelectorAll('.course-checkbox').forEach(function(cb) {
+                    cb.addEventListener('change', function() {
+                        this.closest('.course-card').classList.toggle('selected', this.checked);
+                        updateCount();
+                    });
+                });
+
+                // Select all button
+                document.getElementById('selectAllBtn').addEventListener('click', function() {
+                    const checkboxes = document.querySelectorAll('.course-checkbox');
+                    const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+                    checkboxes.forEach(function(cb) {
+                        cb.checked = !allChecked;
+                        cb.closest('.course-card').classList.toggle('selected', cb.checked);
+                    });
+                    this.innerHTML = allChecked ? '<i class="bi bi-check2-all me-1"></i>Select All' : '<i class="bi bi-x-lg me-1"></i>Deselect All';
+                    updateCount();
+                });
+
+                updateCount();
+            })
+            .catch(function() {
+                courseList.innerHTML = '<div class="no-courses text-danger"><i class="bi bi-exclamation-triangle" style="font-size: 32px; display: block; margin-bottom: 10px;"></i>Failed to load courses</div>';
+            });
+    });
+
+    function updateCount() {
+        const checked = document.querySelectorAll('.course-checkbox:checked').length;
+        selectedCount.textContent = checked + ' selected';
+    }
+});
+</script>
 
 </body>
 </html>

@@ -303,8 +303,11 @@
                             <span class="status-badge inactive" th:unless="${student.active}">Inactive</span>
                         </td>
                         <td class="text-center">
-                            <a th:href="@{/students/edit/{id}(id=${student.id})}" class="btn btn-sm text-primary fs-6 py-0 px-2" title="Edit course history">
-                                <i class="bi bi-book"></i> Course History
+                            <a th:href="@{/students/{id}/courses(id=${student.id})}" class="btn btn-sm text-primary fs-6 py-0 px-2" title="Enroll in courses">
+                                <i class="bi bi-journal-plus"></i> Courses
+                            </a>
+                            <a th:href="@{/students/edit/{id}(id=${student.id})}" class="btn btn-sm text-secondary fs-6 py-0 px-2" title="Edit student details">
+                                <i class="bi bi-pencil-square"></i> Edit
                             </a>
                             <a th:href="@{/students/delete/{id}(id=${student.id})}" 
                                class="btn btn-sm text-danger fs-6 py-0 px-2"

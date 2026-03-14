@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Enrollment - SMS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: #f8fafc;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+        }
+
+        .sidebar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px 0;
+            position: fixed;
+            width: 250px;
+            left: 0;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar .logo {
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 20px;
+        }
+
+        .sidebar .logo h4 { font-weight: 700; letter-spacing: 0.5px; }
+
+        .sidebar .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            padding: 12px 20px;
+            margin: 5px 10px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+            border-left: 4px solid transparent;
+        }
+
+        .sidebar .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .sidebar .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.25);
+            color: white;
+            border-left-color: white;
+        }
+
+        .sidebar .nav-link i { margin-right: 12px; font-size: 18px; }
+
+        .sidebar-logout {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            padding: 0 10px;
+        }
+
+        .sidebar-logout .nav-link {
+            width: calc(100% - 20px);
+            justify-content: center;
+            margin: 0 10px;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: 30px;
+            width: calc(100% - 250px);
+            min-height: 100vh;
+        }
+
+        .page-header {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .page-header h2 {
+            color: #1e293b;
+            font-weight: 700;
+            margin: 0 0 5px 0;
+        }
+
+        .page-header p {
+            color: #64748b;
+            margin: 0;
+            font-size: 14px;
+        }
+
+        .student-info-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .student-avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            border: 3px solid #667eea;
+        }
+
+        .student-details h5 {
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+
+        .student-details p {
+            color: #64748b;
+            margin: 0;
+            font-size: 14px;
+        }
+
+        .student-details .badge-program {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            display: inline-block;
+            margin-top: 6px;
+        }
+
+        .section-title {
+            font-weight: 700;
+            color: #1e293b;
+            font-size: 18px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            color: #667eea;
+            font-size: 22px;
+        }
+
+        .content-section {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            margin-bottom: 25px;
+        }
+
+        .course-card {
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .course-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.12);
+        }
+
+        .course-card.enrolled {
+            border-color: #10b981;
+            background: #f0fdf4;
+        }
+
+        .course-info h6 {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+
+        .course-info .course-meta {
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        .course-info .course-meta span {
+            margin-right: 15px;
+        }
+
+        .course-info .course-code {
+            display: inline-block;
+            background: #f1f5f9;
+            color: #475569;
+            padding: 2px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .btn-enroll {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 13px;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .btn-enroll:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.35);
+            color: white;
+        }
+
+        .btn-unenroll {
+            background: #fee2e2;
+            border: none;
+            color: #dc2626;
+            padding: 8px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 13px;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .btn-unenroll:hover {
+            background: #fecaca;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
+        }
+
+        .enrolled-badge {
+            background: #d1fae5;
+            color: #065f46;
+            padding: 3px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #94a3b8;
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .stats-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            flex: 1;
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            text-align: center;
+        }
+
+        .stat-card .stat-number {
+            font-size: 28px;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .stat-card .stat-label {
+            font-size: 13px;
+            color: #64748b;
+            margin-top: 4px;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar { width: 100%; position: relative; margin-bottom: 20px; }
+            .main-content { margin-left: 0; width: 100%; padding: 15px; }
+            .stats-row { flex-direction: column; }
+            .course-card { flex-direction: column; gap: 12px; align-items: flex-start; }
+            .sidebar-logout { position: relative; bottom: auto; margin-top: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="d-flex">
+    <div class="sidebar">
+        <div class="logo">
+            <i class="bi bi-graph-up" style="font-size: 28px; color: white;"></i>
+            <h4>SMS</h4>
+            <small style="color: rgba(255, 255, 255, 0.7);">Student Management</small>
+        </div>
+
+        <nav class="nav flex-column px-2">
+            <a th:href="@{/}" class="nav-link">
+                <i class="bi bi-speedometer2"></i>
+                <span>Dashboard</span>
+            </a>
+            <a th:href="@{/register}" class="nav-link">
+                <i class="bi bi-person-plus"></i>
+                <span>Student Registration</span>
+            </a>
+            <a th:href="@{/students}" class="nav-link active">
+                <i class="bi bi-people"></i>
+                <span>Student Management</span>
+            </a>
+            <a th:href="@{/courses}" class="nav-link">
+                <i class="bi bi-book"></i>
+                <span>Course Management</span>
+            </a>
+            <a th:href="@{/programs}" class="nav-link">
+                <i class="bi bi-mortarboard"></i>
+                <span>Programs</span>
+            </a>
+            <a th:href="@{/reports}" class="nav-link">
+                <i class="bi bi-bar-chart-line"></i>
+                <span>Reports</span>
+            </a>
+            <a th:href="@{/settings}" class="nav-link">
+                <i class="bi bi-gear"></i>
+                <span>Settings</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-logout">
+            <a th:href="@{/logout}" class="nav-link" style="background-color: rgba(255, 255, 255, 0.2); border-radius: 8px; justify-content: center;">
+                <i class="bi bi-box-arrow-right"></i>
+                <span>Logout</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2><i class="bi bi-journal-bookmark-fill me-2" style="color: #667eea;"></i>Course Enrollment</h2>
+                    <p>Manage course enrollment for the selected student</p>
+                </div>
+                <a th:href="@{/students}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-1"></i>Back to Students
+                </a>
+            </div>
+        </div>
+
+        <!-- Student Info Card -->
+        <div class="student-info-card">
+            <img th:src="@{'https://ui-avatars.com/api/?name=' + ${student.fullName} + '&background=667eea&color=fff&size=70'}" class="student-avatar" alt="avatar">
+            <div class="student-details">
+                <h5 th:text="${student.fullName}">Student Name</h5>
+                <p><i class="bi bi-hash me-1"></i><span th:text="${student.studentNumber}">KDU-SE-2026-0001</span></p>
+                <p><i class="bi bi-envelope me-1"></i><span th:text="${student.email}">student@kdu.ac.lk</span></p>
+                <span class="badge-program" th:text="${student.program}">BSc (Hons) in Computer Science</span>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-number" th:text="${#lists.size(programCourses)}">0</div>
+                <div class="stat-label">Available Courses</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" th:text="${#lists.size(enrolledCourses)}">0</div>
+                <div class="stat-label">Enrolled Courses</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" th:text="${#lists.size(programCourses) - #lists.size(enrolledCourses)}">0</div>
+                <div class="stat-label">Remaining</div>
+            </div>
+        </div>
+
+        <!-- Available Courses for this Program -->
+        <div class="content-section">
+            <div class="section-title">
+                <i class="bi bi-book"></i>
+                Courses for <span th:text="${student.program}">Program</span>
+            </div>
+
+            <!-- Empty state if no courses -->
+            <div th:if="${#lists.isEmpty(programCourses)}" class="empty-state">
+                <i class="bi bi-inbox"></i>
+                <p>No courses are currently available for this degree program.</p>
+            </div>
+
+            <!-- Course list -->
+            <div th:each="course : ${programCourses}" 
+                 th:classappend="${enrolledCourseIds.contains(course.id)} ? ' enrolled' : ''"
+                 class="course-card">
+                <div class="course-info">
+                    <span class="course-code" th:text="${course.courseCode}">CS1101</span>
+                    <span th:if="${enrolledCourseIds.contains(course.id)}" class="enrolled-badge">
+                        <i class="bi bi-check-circle me-1"></i>Enrolled
+                    </span>
+                    <h6 th:text="${course.courseName}">Introduction to Programming</h6>
+                    <div class="course-meta">
+                        <span><i class="bi bi-mortarboard me-1"></i><span th:text="${course.credits}">3</span> Credits</span>
+                        <span><i class="bi bi-person me-1"></i><span th:text="${course.instructor}">Instructor</span></span>
+                        <span><i class="bi bi-calendar me-1"></i><span th:text="${course.semester}">Semester 1</span></span>
+                        <span><i class="bi bi-clock me-1"></i><span th:text="${course.schedule}">Mon 08:00</span></span>
+                    </div>
+                </div>
+                <div>
+                    <!-- Enroll button (shown when NOT enrolled) -->
+                    <form th:unless="${enrolledCourseIds.contains(course.id)}"
+                          th:action="@{/students/{sid}/courses/enroll/{cid}(sid=${student.id}, cid=${course.id})}" method="POST" style="display:inline;">
+                        <button type="submit" class="btn-enroll">
+                            <i class="bi bi-plus-circle me-1"></i>Enroll
+                        </button>
+                    </form>
+                    <!-- Unenroll button (shown when enrolled) -->
+                    <form th:if="${enrolledCourseIds.contains(course.id)}"
+                          th:action="@{/students/{sid}/courses/unenroll/{cid}(sid=${student.id}, cid=${course.id})}" method="POST" style="display:inline;">
+                        <button type="submit" class="btn-unenroll" onclick="return confirm('Remove this course enrollment?')">
+                            <i class="bi bi-x-circle me-1"></i>Unenroll
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

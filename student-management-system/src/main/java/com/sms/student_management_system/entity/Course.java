@@ -23,9 +23,8 @@ public class Course {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "Course code cannot be blank")
     @Column(name = "course_code", nullable = false, unique = true, length = 20)
-    private String courseCode; // Format: CS101, SE201, etc.
+    private String courseCode; // Auto-generated: PREFIX + sequence
 
     @NotBlank(message = "Course name cannot be blank")
     @Column(name = "course_name", nullable = false, length = 100)
@@ -50,6 +49,9 @@ public class Course {
 
     @Column(length = 20)
     private String status; // Active, Inactive, Full, Cancelled
+
+    @Column(name = "program_name", length = 100)
+    private String programName;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -132,6 +134,9 @@ public class Course {
 
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
+
+    public String getProgramName() { return programName; }
+    public void setProgramName(String programName) { this.programName = programName; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
