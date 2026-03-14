@@ -3,6 +3,7 @@ package com.sms.student_management_system.repository;
 import com.sms.student_management_system.entity.Program;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import java.util.List;
 
@@ -11,6 +12,9 @@ public interface ProgramRepository extends JpaRepository<Program, Long> {
     
     
     List<Program> findByProgramNameContainingIgnoreCase(String programName);
+
+    @Query("SELECT p FROM Program p WHERE LOWER(p.programName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(p.programCode) LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(p.department) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+    List<Program> searchByNameOrCode(@Param("keyword") String keyword);
 
     // 1. මුළු ශිෂ්‍ය සංඛ්‍යාව ලබා ගැනීමට (Reports සඳහා)
     // Coalesce පාවිච්චි කළේ දත්ත කිසිවක් නැති විට null වෙනුවට 0 ලබා ගැනීමටයි

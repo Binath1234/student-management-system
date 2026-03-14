@@ -27,7 +27,7 @@ public class ProgramController {
         // 2. Search keyword එක අනුව පෙරහන් කරන්න
         List<Program> filteredPrograms;
         if (keyword != null && !keyword.isEmpty()) {
-            filteredPrograms = programRepository.findByProgramNameContainingIgnoreCase(keyword);
+            filteredPrograms = programRepository.searchByNameOrCode(keyword);
         } else {
             filteredPrograms = allPrograms;
         }

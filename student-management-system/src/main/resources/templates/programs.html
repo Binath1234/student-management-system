@@ -178,6 +178,10 @@
             transform: translateY(-2px);
             box-shadow: 0 8px 16px rgba(102, 126, 234, 0.3);
         }
+
+        .badge-bachelor { background-color: rgba(102, 126, 234, 0.15); color: #667eea; }
+        .badge-master { background-color: rgba(118, 75, 162, 0.15); color: #764ba2; }
+        .badge-diploma { background-color: rgba(16, 185, 129, 0.15); color: #059669; }
     </style>
 </head>
 <body>
@@ -267,14 +271,12 @@
             </div>
         </div>
 
-        <div class="row g-2 mb-4">
-            <div class="col-md-12">
-                <form th:action="@{/programs}" method="get" class="input-group search-container shadow-sm">
-                    <span class="input-group-text bg-transparent border-0"><i class="bi bi-search text-muted"></i></span>
-                    <input type="text" name="keyword" th:value="${keyword}" class="form-control border-0 bg-transparent" placeholder="Search by program name or code...">
-                    <button type="submit" class="btn btn-primary px-4 rounded-3 ms-2">Search</button>
-                </form>
-            </div>
+        <div class="mb-4">
+            <form th:action="@{/programs}" method="get" class="input-group search-container shadow-sm" style="max-width: 500px;">
+                <span class="input-group-text bg-transparent border-0"><i class="bi bi-search text-muted"></i></span>
+                <input type="text" name="keyword" th:value="${keyword}" class="form-control border-0 bg-transparent" placeholder="Search by program name or code...">
+                <button type="submit" class="btn btn-primary px-4 rounded-3 ms-2">Search</button>
+            </form>
         </div>
 
         <div class="card shadow-sm overflow-hidden">
@@ -295,7 +297,9 @@
                     <tr th:each="program : ${programs}">
                         <td class="ps-4 fw-medium text-primary" th:text="${program.programCode}"></td>
                         <td th:text="${program.programName}" class="fw-bold"></td>
-                        <td><span class="badge badge-bachelor px-2 py-1" th:text="${program.degreeType}"></span></td>
+                        <td><span class="badge px-2 py-1" 
+                              th:classappend="${program.degreeType == 'Bachelor' ? 'badge-bachelor' : (program.degreeType == 'Master' ? 'badge-master' : 'badge-diploma')}"
+                              th:text="${program.degreeType}"></span></td>
                         <td th:text="${program.department}"></td>
                         <td th:text="${program.duration}"></td>
                         <td th:text="${program.credits}"></td>
