@@ -4,6 +4,7 @@ import com.sms.student_management_system.entity.Admin;
 import com.sms.student_management_system.repository.AdminRepository;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +17,8 @@ public class SettingsController {
 
     @Autowired
     private AdminRepository adminRepository;
+
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @GetMapping("/settings")
     public String settingsPage(HttpSession session, Model model) {
@@ -74,7 +77,7 @@ public class SettingsController {
 
         // Handle password change
         if (currentPassword != null && !currentPassword.isEmpty()) {
-            if (!admin.getPassword().equals(currentPassword)) {
+            if (!passwordEncoder.matches(currentPassword, admin.getPassword())) {
                 redirectAttributes.addFlashAttribute("error", "Current password is incorrect.");
                 return "redirect:/settings";
             }
@@ -86,7 +89,7 @@ public class SettingsController {
                 redirectAttributes.addFlashAttribute("error", "New password and confirmation do not match.");
                 return "redirect:/settings";
             }
-            admin.setPassword(newPassword);
+            admin.setPassword(passwordEncoder.encode(newPassword));
         }
 
         adminRepository.save(admin);

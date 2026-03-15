@@ -62,8 +62,8 @@ public class StudentService {
         // Validate student data
         validateStudentData(studentDTO);
         
-        // Generate unique student number
-        String studentNumber = studentIdGenerator.generateStudentNumber();
+        // Generate unique student number based on program
+        String studentNumber = studentIdGenerator.generateStudentNumber(studentDTO.getProgram());
         logger.debug("Generated student number: {}", studentNumber);
         
         // Build student using StudentBuilder (Builder Pattern)

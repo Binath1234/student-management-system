@@ -299,6 +299,10 @@
         <div class="row justify-content-center">
             <div class="col-md-8">
                 <div class="form-container">
+                    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="bi bi-exclamation-triangle me-2"></i><span th:text="${error}"></span>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
                     <form th:action="@{/students/save}" th:object="${student}" method="POST">
                         
                         <div class="mb-3">

@@ -30,6 +30,22 @@
         .page-header p { color: #64748b; margin: 0; font-size: 14px; }
         .form-container { background: white; border-radius: 12px; padding: 30px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); }
 
+        .btn-purple {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none; color: white; font-weight: 600; transition: all 0.3s ease;
+        }
+        .btn-purple:hover {
+            background: linear-gradient(135deg, #5a6fd6 0%, #6a4296 100%);
+            color: white; transform: translateY(-2px); box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .section-divider { border-top: 2px solid #f1f5f9; margin: 25px 0; }
+
+        .code-badge {
+            display: inline-block; background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white; padding: 4px 14px; border-radius: 20px; font-size: 13px; font-weight: 600;
+        }
+
         @media (max-width: 768px) {
             .sidebar { width: 100%; height: auto; position: relative; margin-bottom: 20px; }
             .main-content { margin-left: 0; width: 100%; padding: 15px; }
@@ -63,49 +79,71 @@
 
     <div class="main-content">
         <div class="page-header">
-            <h2>Edit Academic Program</h2>
-            <p>Update program details and configuration</p>
+            <h2><i class="bi bi-pencil-square me-2" style="color: #667eea;"></i>Edit Academic Program</h2>
+            <p>Update program details for <span class="fw-semibold" th:text="${program.programCode}"></span></p>
         </div>
         <div class="row justify-content-center">
-            <div class="col-md-10">
+            <div class="col-lg-9">
                 <div class="form-container">
                     <form th:action="@{/programs/update/{id}(id=${program.id})}" th:object="${program}" method="POST">
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold">Program Code</label>
-                                <input type="text" th:field="*{programCode}" class="form-control py-2" required>
+
+                        <h6 class="mb-3" style="color: #667eea; font-weight: 700;">
+                            <i class="bi bi-mortarboard me-2"></i>Program Information
+                        </h6>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Program Code</label>
+                            <div class="d-flex align-items-center gap-2">
+                                <input type="text" th:field="*{programCode}" class="form-control py-2" readonly style="background: #f8fafc;">
+                                <span class="code-badge" th:text="${program.programCode}"></span>
                             </div>
+                            <small class="text-muted">Program code cannot be changed</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Program Name <span class="text-danger">*</span></label>
+                            <input type="text" th:field="*{programName}" class="form-control py-2" required>
+                        </div>
+
+                        <div class="row mb-3">
                             <div class="col-md-6">
-                                <label class="form-label fw-semibold">Program Name</label>
-                                <input type="text" th:field="*{programName}" class="form-control py-2" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold">Degree Type</label>
+                                <label class="form-label fw-semibold">Degree Type <span class="text-danger">*</span></label>
                                 <select th:field="*{degreeType}" class="form-select py-2">
                                     <option value="Bachelor">Bachelor</option>
                                     <option value="Master">Master</option>
-                                    <option value="Diploma">Diploma</option>
                                 </select>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label fw-semibold">Department</label>
-                                <input type="text" th:field="*{department}" class="form-control py-2">
+                                <label class="form-label fw-semibold">Department <span class="text-danger">*</span></label>
+                                <input type="text" th:field="*{department}" class="form-control py-2" required>
+                            </div>
+                        </div>
+
+                        <div class="section-divider"></div>
+
+                        <h6 class="mb-3" style="color: #667eea; font-weight: 700;">
+                            <i class="bi bi-sliders me-2"></i>Program Configuration
+                        </h6>
+
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Duration <span class="text-danger">*</span></label>
+                                <input type="text" th:field="*{duration}" class="form-control py-2" required>
                             </div>
                             <div class="col-md-4">
-                                <label class="form-label fw-semibold">Duration</label>
-                                <input type="text" th:field="*{duration}" class="form-control py-2">
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label fw-semibold">Credits</label>
-                                <input type="number" th:field="*{credits}" class="form-control py-2">
+                                <label class="form-label fw-semibold">Credits <span class="text-danger">*</span></label>
+                                <input type="number" th:field="*{credits}" class="form-control py-2" required>
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label fw-semibold">Enrolled Students</label>
                                 <input type="number" th:field="*{enrolled}" class="form-control py-2">
                             </div>
+                        </div>
+
+                        <div class="row mb-3">
                             <div class="col-md-6">
-                                <label class="form-label fw-semibold">Coordinator</label>
-                                <input type="text" th:field="*{coordinator}" class="form-control py-2">
+                                <label class="form-label fw-semibold">Coordinator <span class="text-danger">*</span></label>
+                                <input type="text" th:field="*{coordinator}" class="form-control py-2" required>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold">Status</label>
@@ -115,9 +153,12 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="mt-4 pt-3 border-top d-flex gap-2">
-                            <button type="submit" class="btn btn-primary px-4 py-2 w-100">
-                                <i class="bi bi-check-circle me-2"></i>Save Changes
+
+                        <div class="section-divider"></div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-purple px-4 py-2 w-100">
+                                <i class="bi bi-check-circle me-2"></i>Update Program
                             </button>
                             <a th:href="@{/programs}" class="btn btn-outline-secondary px-4 py-2 w-100">Cancel</a>
                         </div>

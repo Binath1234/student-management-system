@@ -142,7 +142,7 @@
                 <div class="card shadow-sm p-4">
                     <h5 class="fw-bold mb-3"><i class="bi bi-pie-chart-fill me-2" style="color: #764ba2;"></i>Students by Program</h5>
                     <p class="text-muted small mb-3">Distribution of enrolled students across programs</p>
-                    <div class="chart-container">
+                    <div class="chart-container" style="height: 350px;">
                         <canvas id="programPieChart"></canvas>
                     </div>
                 </div>
@@ -188,17 +188,20 @@
     });
 
     // --- Students by Program Pie Chart ---
+    const hasData = pieData.some(v => v > 0);
+
+    // Shorten long program names for the legend
+    const shortLabels = pieLabels.map(l => l.replace('BSc (Hons) in ', '').replace('MSc in ', 'MSc '));
+
     new Chart(document.getElementById('programPieChart'), {
         type: 'doughnut',
         data: {
-            labels: pieLabels,
+            labels: shortLabels,
             datasets: [{
-                data: pieData,
-                backgroundColor: [
-                    '#667eea', '#764ba2', '#f093fb', '#4facfe',
-                    '#00f2fe', '#43e97b', '#fa709a', '#fee140',
-                    '#30cfd0', '#a18cd1'
-                ],
+                data: hasData ? pieData : [1],
+                backgroundColor: hasData
+                    ? ['#667eea', '#764ba2', '#f093fb', '#4facfe', '#00f2fe', '#43e97b', '#fa709a', '#fee140', '#30cfd0', '#a18cd1']
+                    : ['#e2e8f0'],
                 borderWidth: 2,
                 borderColor: '#fff'
             }]
@@ -208,12 +211,31 @@
             maintainAspectRatio: false,
             plugins: {
                 legend: {
+                    display: hasData,
                     position: 'bottom',
-                    labels: { padding: 15, usePointStyle: true, pointStyle: 'circle', font: { size: 11 } }
+                    labels: { padding: 12, usePointStyle: true, pointStyle: 'circle', font: { size: 11 }, boxWidth: 10 }
+                },
+                tooltip: {
+                    enabled: hasData,
+                    callbacks: {
+                        label: function(ctx) {
+                            const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
+                            const pct = total > 0 ? Math.round(ctx.raw / total * 100) : 0;
+                            return ' ' + ctx.label + ': ' + ctx.raw + ' (' + pct + '%)';
+                        }
+                    }
                 }
             }
         }
     });
+
+    if (!hasData) {
+        const ctx = document.getElementById('programPieChart').getContext('2d');
+        ctx.font = '14px Segoe UI';
+        ctx.fillStyle = '#94a3b8';
+        ctx.textAlign = 'center';
+        ctx.fillText('No students enrolled yet', ctx.canvas.width / 2, ctx.canvas.height / 2);
+    }
 </script>
 </body>
 </html>

@@ -2,70 +2,81 @@ package com.sms.student_management_system.util;
 
 import com.sms.student_management_system.repository.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import java.time.LocalDate;
 import java.time.Year;
+import java.util.Map;
 
 /**
  * Student ID Generator using Factory Pattern.
  * 
  * Design Pattern: Factory Pattern
  * This class acts as a factory for generating unique student numbers
- * in the format: KDU-SE-YYYY-XXXX (e.g., KDU-SE-2024-0001)
+ * in the format: KDU-{programCode}-YYYY-XXXX
  * 
- * Factory Pattern Benefits:
- * - Encapsulates the logic of ID generation
- * - Makes it easy to change generation strategy without affecting other parts
- * - Provides a single point for managing ID generation rules
+ * Program-specific prefixes:
+ * - BSc Computer Science       → KDU-BCS-YYYY-XXXX
+ * - BSc Software Engineering   → KDU-BSE-YYYY-XXXX
+ * - BSc Information Technology  → KDU-BIT-YYYY-XXXX
+ * - BSc Data Science            → KDU-BDS-YYYY-XXXX
+ * - BSc Information Systems     → KDU-BIS-YYYY-XXXX
+ * - MSc Computer Science        → KDU-MCS-YYYY-XXXX
+ * - MSc Information Technology  → KDU-MIT-YYYY-XXXX
  * 
  * @author Student Management System
- * @version 1.0
+ * @version 2.0
  */
 @Component
 public class StudentIdGenerator {
 
     @Autowired
     private StudentRepository studentRepository;
-    
-    @Value("${student.id.format:KDU-SE-{year}-{sequence}}")
-    private String idFormat;
-    
-    @Value("${student.id.prefix:KDU}")
-    private String prefix;
-    
-    @Value("${student.id.program:SE}")
-    private String program;
+
+    private static final String PREFIX = "KDU";
+
+    private static final Map<String, String> PROGRAM_CODE_MAP = Map.of(
+        "BSc (Hons) in Computer Science", "BCS",
+        "BSc (Hons) in Software Engineering", "BSE",
+        "BSc (Hons) in Information Technology", "BIT",
+        "BSc (Hons) in Data Science", "BDS",
+        "BSc (Hons) in Information Systems", "BIS",
+        "MSc in Computer Science", "MCS",
+        "MSc in Information Technology", "MIT"
+    );
 
     /**
-     * Generate a unique student number with the format: KDU-SE-YYYY-XXXX
-     * Sequential numbering is maintained per year.
+     * Generate a unique student number based on the program.
+     * Format: KDU-{programCode}-YYYY-XXXX
      * 
+     * @param programName The full program name (e.g. "BSc (Hons) in Software Engineering")
      * @return Generated student number
      */
-    public String generateStudentNumber() {
+    public String generateStudentNumber(String programName) {
+        String programCode = getProgramCode(programName);
         String currentYear = String.valueOf(Year.now().getValue());
-        int nextSequence = getNextSequenceNumber(currentYear);
-        
-        // Format: KDU-SE-YYYY-XXXX
-        return String.format("%s-%s-%s-%04d", prefix, program, currentYear, nextSequence);
+        int nextSequence = getNextSequenceNumber(programCode, currentYear);
+
+        return String.format("%s-%s-%s-%04d", PREFIX, programCode, currentYear, nextSequence);
     }
 
     /**
-     * Get the next sequence number for the current year.
-     * Queries the database to find the maximum sequence number for the current year,
-     * then returns the next available number.
-     * 
-     * @param year The year for which to get the next sequence
-     * @return Next sequence number
+     * Resolve the short program code from the full program name.
      */
-    private int getNextSequenceNumber(String year) {
+    private String getProgramCode(String programName) {
+        if (programName == null) {
+            return "GEN";
+        }
+        return PROGRAM_CODE_MAP.getOrDefault(programName.trim(), "GEN");
+    }
+
+    /**
+     * Get the next sequence number for the given program code and year.
+     * Queries ALL students (including soft-deleted) to avoid unique constraint violations.
+     */
+    private int getNextSequenceNumber(String programCode, String year) {
         try {
-            String pattern = prefix + "-" + program + "-" + year + "-";
-            
-            // For this demonstration, we'll use a simple counter
-            // In production, this could use database sequences or atomic increments
-            int maxSequence = studentRepository.findAllActive()
+            String pattern = PREFIX + "-" + programCode + "-" + year + "-";
+
+            int maxSequence = studentRepository.findAll()
                 .stream()
                 .filter(s -> s.getStudentNumber() != null && s.getStudentNumber().startsWith(pattern))
                 .mapToInt(s -> {
@@ -78,22 +89,18 @@ public class StudentIdGenerator {
                 })
                 .max()
                 .orElse(0);
-            
+
             return maxSequence + 1;
         } catch (Exception e) {
-            // If error occurs, start from 1
             return 1;
         }
     }
 
     /**
      * Validate if a student number follows the expected format.
-     * 
-     * @param studentNumber The student number to validate
-     * @return true if valid format, false otherwise
      */
     public boolean isValidFormat(String studentNumber) {
-        return studentNumber != null && 
-               studentNumber.matches(prefix + "-" + program + "-\\d{4}-\\d{4}");
+        return studentNumber != null &&
+               studentNumber.matches(PREFIX + "-[A-Z]{2,3}-\\d{4}-\\d{4}");
     }
 }

@@ -36,16 +36,20 @@ public class ReportsController {
         model.addAttribute("totalStudents", activeStudents.size());
         model.addAttribute("totalPrograms", totalProgramsCount);
 
-        // --- Pie Chart: Students by Program ---
+        // --- Pie Chart: Students by Program (count actual enrolled students) ---
+        Map<String, Long> studentsByProgram = activeStudents.stream()
+                .filter(s -> s.getProgram() != null && !s.getProgram().isBlank())
+                .collect(Collectors.groupingBy(Student::getProgram, Collectors.counting()));
+
+        // Include all programs (even those with 0 students)
         var allPrograms = programRepository.findAll();
+        List<String> pieLabels = new ArrayList<>();
+        List<Long> pieData = new ArrayList<>();
 
-        List<String> pieLabels = allPrograms.stream()
-                .map(p -> p.getProgramName())
-                .collect(Collectors.toList());
-
-        List<Integer> pieData = allPrograms.stream()
-                .map(p -> p.getEnrolled())
-                .collect(Collectors.toList());
+        for (var p : allPrograms) {
+            pieLabels.add(p.getProgramName());
+            pieData.add(studentsByProgram.getOrDefault(p.getProgramName(), 0L));
+        }
 
         model.addAttribute("pieLabels", pieLabels);
         model.addAttribute("pieData", pieData);

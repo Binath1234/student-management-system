@@ -77,14 +77,15 @@ public class StudentServiceTest {
     @Test
     @DisplayName("Test register new student successfully")
     public void testRegisterStudentSuccess() {
-        when(studentIdGenerator.generateStudentNumber()).thenReturn("KDU-SE-2024-0001");
+        when(studentIdGenerator.generateStudentNumber(anyString())).thenReturn("KDU-BSE-2024-0001");
         when(studentRepository.save(any(Student.class))).thenReturn(student);
 
+        student.setStudentNumber("KDU-BSE-2024-0001");
         Student result = studentService.registerStudent(studentDTO);
 
         assertNotNull(result);
         assertEquals("John Doe", result.getFullName());
-        assertEquals("KDU-SE-2024-0001", result.getStudentNumber());
+        assertEquals("KDU-BSE-2024-0001", result.getStudentNumber());
         assertEquals("john.doe@example.com", result.getEmail());
         verify(studentRepository, times(1)).save(any(Student.class));
     }
