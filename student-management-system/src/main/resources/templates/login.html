@@ -342,6 +342,12 @@
             <h2 class="login-title">Student Management System</h2>
             <p class="login-subtitle">Sign in to access the admin portal</p>
 
+            <!-- Success Message -->
+            <div th:if="${success}" style="background: #f0fdf4; border: 1px solid #bbf7d0; color: #16a34a; padding: 12px 16px; border-radius: 12px; font-size: 14px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                <i class="bi bi-check-circle"></i>
+                <span th:text="${success}">Success</span>
+            </div>
+
             <!-- Error Message -->
             <div th:if="${error}" class="alert-error">
                 <i class="bi bi-exclamation-circle"></i>
@@ -353,6 +359,8 @@
                     <label>Username</label>
                     <div class="input-wrapper">
                         <input type="text" name="username" class="form-control" placeholder="Enter your username" required>
+ 
+ 
                         <i class="bi bi-person"></i>
                     </div>
                 </div>

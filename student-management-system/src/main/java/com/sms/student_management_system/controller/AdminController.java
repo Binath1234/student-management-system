@@ -36,7 +36,10 @@ public class AdminController {
     }
 
     @GetMapping("/admin/register")
-    public String adminRegForm(Model model) {
+    public String adminRegForm(HttpSession session, Model model) {
+        if (session.getAttribute("loggedInAdmin") == null) {
+            return "redirect:/login";
+        }
         model.addAttribute("admin", new Admin());
         return "admin_register";
     }
@@ -47,10 +50,14 @@ public String logout(HttpSession session) {
 }
 
     @PostMapping("/admin/register")
-    public String saveAdmin(@ModelAttribute("admin") Admin admin) {
+    public String saveAdmin(@ModelAttribute("admin") Admin admin, HttpSession session, org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
+        if (session.getAttribute("loggedInAdmin") == null) {
+            return "redirect:/login";
+        }
         admin.setPassword(passwordEncoder.encode(admin.getPassword()));
         adminRepository.save(admin);
-        return "redirect:/"; // මුල් පිටුවට යවනවා
+        redirectAttributes.addFlashAttribute("success", "New admin '" + admin.getUsername() + "' registered successfully!");
+        return "redirect:/settings";
     }
     @GetMapping("/login")
 public String loginPage() {

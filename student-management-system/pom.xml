@@ -48,12 +48,7 @@
 			<artifactId>spring-boot-starter-thymeleaf</artifactId>
 		</dependency>
 
-		<!-- H2 Database -->
-		<dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
-			<scope>runtime</scope>
-		</dependency>
+
 
 		<!-- Validation -->
 		<dependency>
@@ -75,11 +70,10 @@
 			<optional>true</optional>
 		</dependency>
 
-		<!-- PostgreSQL driver (optional for production) -->
+		<!-- PostgreSQL Database -->
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
-			<version>42.7.1</version>
 			<scope>runtime</scope>
 		</dependency>
 

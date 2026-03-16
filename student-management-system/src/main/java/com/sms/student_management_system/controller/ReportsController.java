@@ -1,6 +1,8 @@
 package com.sms.student_management_system.controller;
 
+import com.sms.student_management_system.entity.Course;
 import com.sms.student_management_system.entity.Student;
+import com.sms.student_management_system.repository.CourseRepository;
 import com.sms.student_management_system.repository.ProgramRepository;
 import com.sms.student_management_system.repository.StudentRepository;
 import jakarta.servlet.http.HttpSession;
@@ -23,6 +25,9 @@ public class ReportsController {
     @Autowired
     private StudentRepository studentRepository;
 
+    @Autowired
+    private CourseRepository courseRepository;
+
     @GetMapping("/reports")
     public String showReports(HttpSession session, Model model) {
         if (session.getAttribute("loggedInAdmin") == null) {
@@ -33,8 +38,12 @@ public class ReportsController {
         long totalProgramsCount = programRepository.count();
         List<Student> activeStudents = studentRepository.findAllActive();
 
+        long activeCourses = courseRepository.findAll().stream()
+                .filter(c -> "Active".equals(c.getStatus())).count();
+
         model.addAttribute("totalStudents", activeStudents.size());
         model.addAttribute("totalPrograms", totalProgramsCount);
+        model.addAttribute("activeCourses", activeCourses);
 
         // --- Pie Chart: Students by Program (count actual enrolled students) ---
         Map<String, Long> studentsByProgram = activeStudents.stream()

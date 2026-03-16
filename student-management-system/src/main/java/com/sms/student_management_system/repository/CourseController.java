@@ -76,6 +76,7 @@ public class CourseController {
                 newCourse.setCourseName(course.getCourseName());
                 newCourse.setCredits(course.getCredits());
                 newCourse.setStatus(course.getStatus());
+                newCourse.setSemester(course.getSemester());
                 newCourse.setInstructor(course.getInstructor());
                 newCourse.setDepartment(course.getDepartment());
                 newCourse.setProgramName(programName);
